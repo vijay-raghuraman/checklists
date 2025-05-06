@@ -1,4 +1,4 @@
-"""Definitions of the ORM models for the database tables."""
+"""Definitions of the Checklist ORM model."""
 
 from typing import Sequence
 from pydantic import BaseModel
