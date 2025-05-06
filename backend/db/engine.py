@@ -6,11 +6,16 @@ from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 
 from models.checklist import Checklist
+from models.task import Task
 
 
 DB_URL = "sqlite:///./checklists.sqlite"
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
-SQLModel.metadata.create_all(engine)
+
+
+def create_db_and_tables() -> None:
+    """Create the database and tables."""
+    SQLModel.metadata.create_all(engine)
 
 
 def get_session() -> Generator[Session, None, None]:
