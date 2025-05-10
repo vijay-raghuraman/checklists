@@ -6,12 +6,12 @@ authors = [
     {name = "Vijay Ram Raghuraman", email = "vijayrram.ae@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0"
 license = {text = "MIT"}
 dependencies = [
-    "uvicorn (>=0.34.2,<0.35.0)",
     "fastapi (>=0.115.12,<0.116.0)",
     "sqlmodel (>=0.0.24,<0.0.25)",
+    "uvicorn (>=0.34.2,<0.35.0)",
 ]
 
 [tool.poetry]
