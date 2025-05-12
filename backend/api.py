@@ -127,6 +127,12 @@ async def post_task(
     fields: TaskFields = Body(description="Fields used to create the task"),
 ) -> Task:
     """Create a new task."""
+    if not session.get(Checklist, fields.checklist_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Checklist with id={fields.checklist_id} not found",
+        )
+
     task = Task(**fields.model_dump())
 
     session.add(task)
@@ -140,16 +146,28 @@ async def post_task(
     path="/",
     status_code=status.HTTP_200_OK,
 )
-async def get_task(
+async def get_tasks(
     session: DatabaseSession,
+    cid: int = Query(description="ID of the checklist to get tasks from."),
     page: int = Query(default=1, description="Page to return"),
     rows: int = Query(default=10, description="Rows per page", ge=1, le=100),
 ) -> PaginatedTasks:
     """Get task as per the pagination."""
-    max_pages = math.ceil(len(session.exec(select(Task)).all()) / rows)
+    if not session.get(Checklist, cid):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Checklist with id={cid} not found",
+        )
+
+    max_pages = math.ceil(
+        len(session.exec(select(Task).where(Task.checklist_id == cid)).all())
+        / rows
+    )
 
     skip = (page - 1) * rows
-    tasks = session.exec(select(Task).offset(skip).limit(rows)).all()
+    tasks = session.exec(
+        select(Task).where(Task.checklist_id == cid).offset(skip).limit(rows)
+    ).all()
 
     return PaginatedTasks(
         pagination=Pagination(
@@ -177,6 +195,12 @@ async def patch_task(
     fields: TaskFields = Body(description="Fields to be updated"),
 ) -> Task:
     """Idempotently update the selected task with the given fields."""
+    if not session.get(Checklist, fields.checklist_id):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Checklist with id={fields.checklist_id} not found",
+        )
+
     if not (task := session.get(Task, tid)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
