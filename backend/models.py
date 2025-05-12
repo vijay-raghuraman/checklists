@@ -2,7 +2,7 @@
 
 from typing import Sequence
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field
+from sqlmodel import Relationship, SQLModel, Field
 
 
 class AuditMixin(BaseModel):
@@ -25,7 +25,10 @@ class Fields(SQLModel):
 
 
 class Checklist(AuditMixin, Fields, table=True):
-    pass
+    tasks: list["Task"] = Relationship(
+        back_populates="checklist",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
 
 
 class PaginatedChecklists(BaseModel):
@@ -38,7 +41,7 @@ class TaskFields(Fields):
 
 
 class Task(AuditMixin, TaskFields, table=True):
-    pass
+    checklist: Checklist = Relationship(back_populates="tasks")
 
 
 class PaginatedTasks(SQLModel):
