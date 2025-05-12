@@ -5,8 +5,7 @@ from typing import Annotated, Generator
 from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 
-from models.checklist import Checklist
-from models.task import Task
+from models import Checklist, Task
 
 
 DB_URL = "sqlite:///./checklists.sqlite"

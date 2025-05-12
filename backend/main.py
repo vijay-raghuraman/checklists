@@ -2,9 +2,8 @@
 
 from fastapi import FastAPI
 
-from api.checklist import router as checklist_router
-from api.task import router as task_router
-from db.engine import create_db_and_tables
+from api import checklist_router, task_router
+from engine import create_db_and_tables
 
 
 create_db_and_tables()
